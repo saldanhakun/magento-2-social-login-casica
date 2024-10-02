@@ -36,8 +36,8 @@
   ],
   "repositories": [
     {
-      "type": "git",
-      "url": "https://github.com/saldanhakun/hybridauth-casoca.git"
+      "type": "vcs",
+      "url": "https://github.com/saldanhakun/hybridauth-casoca"
     }
   ],
   "autoload": {
