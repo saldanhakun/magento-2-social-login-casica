@@ -13,10 +13,10 @@
  * Do not edit or add to this file if you wish to upgrade this extension to newer
  * version in the future.
  *
- * @category  Mageplaza
- * @package   Mageplaza_SocialLogin
- * @copyright Copyright (c) Mageplaza (https://www.mageplaza.com/)
- * @license   https://www.mageplaza.com/LICENSE.txt
+ * @category    Mageplaza
+ * @package     Mageplaza_SocialLogin
+ * @copyright   Copyright (c) Mageplaza (http://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
  */
 
 namespace Mageplaza\SocialLogin\Block\Popup;
@@ -34,37 +34,36 @@ use Mageplaza\SocialLogin\Model\System\Config\Source\Position;
 class Social extends Template
 {
     /**
-     * @type SocialHelper
+     * @type \Mageplaza\SocialLogin\Helper\Social
      */
     protected $socialHelper;
 
     /**
-     * @param Context $context
-     * @param SocialHelper $socialHelper
+     * @param \Magento\Framework\View\Element\Template\Context $context
+     * @param \Mageplaza\SocialLogin\Helper\Social $socialHelper
      * @param array $data
      */
     public function __construct(
         Context $context,
         SocialHelper $socialHelper,
         array $data = []
-    ) {
+    )
+    {
         $this->socialHelper = $socialHelper;
 
         parent::__construct($context, $data);
     }
 
     /**
-     * @param $storeId
-     *
      * @return array
      */
-    public function getAvailableSocials($storeId = null)
+    public function getAvailableSocials()
     {
         $availabelSocials = [];
 
         foreach ($this->socialHelper->getSocialTypes() as $socialKey => $socialLabel) {
             $this->socialHelper->setType($socialKey);
-            if ($this->socialHelper->isEnabled($storeId)) {
+            if ($this->socialHelper->isEnabled()) {
                 $availabelSocials[$socialKey] = [
                     'label'     => $socialLabel,
                     'login_url' => $this->getLoginUrl($socialKey),
@@ -77,7 +76,6 @@ class Social extends Template
 
     /**
      * @param $key
-     *
      * @return string
      */
     public function getBtnKey($key)
@@ -110,38 +108,25 @@ class Social extends Template
 
     /**
      * @param null $position
-     *
      * @return bool
      */
     public function canShow($position = null)
     {
         $displayConfig = $this->socialHelper->getConfigGeneral('social_display');
-        $displayConfig = explode(',', $displayConfig ?? '');
+        $displayConfig = explode(',', $displayConfig);
 
         if (!$position) {
-            $controllerName = $this->getRequest()->getFullActionName();
-            switch ($controllerName) {
-                case 'customer_account_login':
-                    $position = Position::PAGE_LOGIN;
-                    break;
-                case 'customer_account_forgotpassword':
-                    $position = Position::PAGE_FORGOT_PASS;
-                    break;
-                case 'customer_account_create':
-                    $position = Position::PAGE_CREATE;
-                    break;
-                default:
-                    return false;
-            }
+            $position = ($this->getRequest()->getFullActionName() == 'customer_account_login') ?
+                Position::PAGE_LOGIN :
+                Position::PAGE_CREATE;
         }
 
         return in_array($position, $displayConfig);
     }
 
     /**
-     * @param $socialKey
+     * @param       $socialKey
      * @param array $params
-     *
      * @return string
      */
     public function getLoginUrl($socialKey, $params = [])

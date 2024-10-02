@@ -13,20 +13,13 @@
  * Do not edit or add to this file if you wish to upgrade this extension to newer
  * version in the future.
  *
- * @category  Mageplaza
- * @package   Mageplaza_SocialLogin
- * @copyright Copyright (c) Mageplaza (https://www.mageplaza.com/)
- * @license   https://www.mageplaza.com/LICENSE.txt
+ * @category    Mageplaza
+ * @package     Mageplaza_SocialLogin
+ * @copyright   Copyright (c) Mageplaza (http://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
  */
 
 namespace Mageplaza\SocialLogin\Controller\Social;
-
-use Magento\Framework\App\ResponseInterface;
-use Magento\Framework\Controller\Result\Raw;
-use Magento\Framework\Controller\ResultInterface;
-use Magento\Framework\Exception\InputException;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Stdlib\Cookie\FailureToSendException;
 
 /**
  * Class Callback
@@ -36,31 +29,36 @@ use Magento\Framework\Stdlib\Cookie\FailureToSendException;
 class Callback extends AbstractSocial
 {
     /**
-     * @return ResponseInterface|Raw|ResultInterface|Callback|void
-     *
-     * @throws FailureToSendException
-     * @throws InputException
-     * @throws LocalizedException
+     * @inheritdoc
      */
     public function execute()
     {
-        $param = $this->getRequest()->getParams();
-        if (isset($param['live.php'])) {
-            $param = array_merge($param, ['hauth_done' => 'Live']);
+        if ($this->checkRequest('hauth_start', false) && (
+                $this->checkRequest('error_reason', 'user_denied')
+                && $this->checkRequest('error', 'access_denied')
+                && $this->checkRequest('error_code', '200')
+                && $this->checkRequest('hauth_done', 'Facebook')
+                || ($this->checkRequest('hauth_done', 'Twitter') && $this->checkRequest('denied'))
+            )) {
+            return $this->_appendJs(sprintf("<script>window.close();</script>"));
         }
 
-        $type = $param['hauth_done'] ?? '';
+        \Hybrid_Endpoint::process();
+    }
 
-        if ($this->checkRequest('hauth_start', false)
-            && (($this->checkRequest('error_reason', 'user_denied')
-                    && $this->checkRequest('error', 'access_denied')
-                    && $this->checkRequest('error_code', '200')
-                    && $this->checkRequest('hauth_done', 'Facebook'))
-                || ($this->checkRequest('hauth_done', 'Twitter') && $this->checkRequest('denied')))
-        ) {
-            return $this->_appendJs(sprintf('<script>window.close();</script>'));
+    /**
+     * @param $key
+     * @param null $value
+     * @return bool|mixed
+     */
+    public function checkRequest($key, $value = null)
+    {
+        $param = $this->getRequest()->getParam($key, false);
+
+        if ($value) {
+            return $param == $value;
         }
 
-        return $this->login($type);
+        return $param;
     }
 }

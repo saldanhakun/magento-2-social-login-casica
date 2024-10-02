@@ -13,34 +13,25 @@
  * Do not edit or add to this file if you wish to upgrade this extension to newer
  * version in the future.
  *
- * @category  Mageplaza
- * @package   Mageplaza_SocialLogin
- * @copyright Copyright (c) Mageplaza (https://www.mageplaza.com/)
- * @license   https://www.mageplaza.com/LICENSE.txt
+ * @category    Mageplaza
+ * @package     Mageplaza_SocialLogin
+ * @copyright   Copyright (c) Mageplaza (http://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
  */
 
 namespace Mageplaza\SocialLogin\Controller\Social;
 
-use Exception;
 use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Model\Account\Redirect as AccountRedirect;
-use Magento\Customer\Model\Customer;
 use Magento\Customer\Model\Session;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\ObjectManager;
-use Magento\Framework\Controller\Result\Raw;
 use Magento\Framework\Controller\Result\RawFactory;
 use Magento\Framework\DataObject;
-use Magento\Framework\Exception\InputException;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Stdlib\Cookie\CookieMetadataFactory;
-use Magento\Framework\Stdlib\Cookie\FailureToSendException;
 use Magento\Framework\Stdlib\Cookie\PhpCookieManager;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
-use Magento\Integration\Model\Oauth\TokenFactory;
 use Mageplaza\SocialLogin\Helper\Social as SocialHelper;
 use Mageplaza\SocialLogin\Model\Social;
 
@@ -52,27 +43,27 @@ use Mageplaza\SocialLogin\Model\Social;
 abstract class AbstractSocial extends Action
 {
     /**
-     * @var Session
+     * @type \Magento\Customer\Model\Session
      */
     protected $session;
 
     /**
-     * @var StoreManagerInterface
+     * @type \Magento\Store\Model\StoreManagerInterface
      */
     protected $storeManager;
 
     /**
-     * @var AccountManagementInterface
+     * @type \Magento\Customer\Api\AccountManagementInterface
      */
     protected $accountManager;
 
     /**
-     * @var SocialHelper
+     * @type \Mageplaza\SocialLogin\Helper\Social
      */
     protected $apiHelper;
 
     /**
-     * @var Social
+     * @type \Mageplaza\SocialLogin\Model\Social
      */
     protected $apiObject;
 
@@ -82,33 +73,22 @@ abstract class AbstractSocial extends Action
     protected $accountRedirect;
 
     /**
-     * @var PhpCookieManager
+     * @type
      */
     protected $cookieMetadataManager;
 
     /**
-     * @var CookieMetadataFactory
+     * @type
      */
     protected $cookieMetadataFactory;
 
     /**
-     * @var RawFactory
+     * @var \Magento\Framework\Controller\Result\RawFactory
      */
     protected $resultRawFactory;
 
     /**
-     * @var Customer
-     */
-    protected $customerModel;
-
-    /**
-     * @var TokenFactory
-     */
-    protected $tokenFactory;
-
-    /**
      * Login constructor.
-     *
      * @param Context $context
      * @param StoreManagerInterface $storeManager
      * @param AccountManagementInterface $accountManager
@@ -117,8 +97,6 @@ abstract class AbstractSocial extends Action
      * @param Session $customerSession
      * @param AccountRedirect $accountRedirect
      * @param RawFactory $resultRawFactory
-     * @param Customer $customerModel
-     * @param TokenFactory $tokenFactory
      */
     public function __construct(
         Context $context,
@@ -128,28 +106,24 @@ abstract class AbstractSocial extends Action
         Social $apiObject,
         Session $customerSession,
         AccountRedirect $accountRedirect,
-        RawFactory $resultRawFactory,
-        Customer $customerModel,
-        TokenFactory $tokenFactory
-    ) {
-        $this->storeManager      = $storeManager;
-        $this->accountManager    = $accountManager;
-        $this->apiHelper         = $apiHelper;
-        $this->apiObject         = $apiObject;
-        $this->session           = $customerSession;
-        $this->accountRedirect   = $accountRedirect;
-        $this->resultRawFactory  = $resultRawFactory;
-        $this->customerModel     = $customerModel;
-        $this->tokenFactory      = $tokenFactory;
-
+        RawFactory $resultRawFactory
+    )
+    {
         parent::__construct($context);
+
+        $this->storeManager     = $storeManager;
+        $this->accountManager   = $accountManager;
+        $this->apiHelper        = $apiHelper;
+        $this->apiObject        = $apiObject;
+        $this->session          = $customerSession;
+        $this->accountRedirect  = $accountRedirect;
+        $this->resultRawFactory = $resultRawFactory;
     }
 
     /**
      * Get Store object
      *
-     * @return StoreInterface
-     * @throws NoSuchEntityException
+     * @return \Magento\Store\Api\Data\StoreInterface
      */
     public function getStore()
     {
@@ -159,29 +133,20 @@ abstract class AbstractSocial extends Action
     /**
      * @param $userProfile
      * @param $type
-     *
-     * @return bool|Customer|mixed
-     * @throws Exception
-     * @throws LocalizedException
+     * @return bool|\Magento\Customer\Model\Customer|mixed
+     * @throws \Exception
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function createCustomerProcess($userProfile, $type)
     {
         $name = explode(' ', $userProfile->displayName ?: __('New User'));
-        if (strtolower($type) === 'steam') {
-            $userProfile->identifier = trim($userProfile->identifier, "https://steamcommunity.com/openid/id/");
-        }
-        $user = array_merge(
-            [
-                'email'      => $userProfile->email ?: $userProfile->identifier . '@' . strtolower($type) . '.com',
-                'firstname'  => $userProfile->firstName ?: (array_shift($name) ?: $userProfile->identifier),
-                'lastname'   => $userProfile->lastName ?: (array_shift($name) ?: $userProfile->identifier),
-                'identifier' => $userProfile->identifier,
-                'type'       => $type,
-                'password'   => isset($userProfile->password) ? $userProfile->password :
-                    $this->getRequest()->getParam('password')
-            ],
-            $this->getUserData($userProfile)
-        );
+        $user = array_merge([
+            'email'      => $userProfile->email ?: $userProfile->identifier . '@' . strtolower($type) . '.com',
+            'firstname'  => $userProfile->firstName ?: (array_shift($name) ?: $userProfile->identifier),
+            'lastname'   => $userProfile->lastName ?: (array_shift($name) ?: $userProfile->identifier),
+            'identifier' => $userProfile->identifier,
+            'type'       => $type
+        ], $this->getUserData($userProfile));
 
         return $this->createCustomer($user, $type);
     }
@@ -191,24 +156,23 @@ abstract class AbstractSocial extends Action
      *
      * @param $user
      * @param $type
-     *
-     * @return bool|Customer|mixed
-     * @throws Exception
-     * @throws LocalizedException
+     * @return bool|\Magento\Customer\Model\Customer|mixed
+     * @throws \Exception
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function createCustomer($user, $type)
     {
         $customer = $this->apiObject->getCustomerByEmail($user['email'], $this->getStore()->getWebsiteId());
-        if ($customer->getId()) {
-            $this->apiObject->setAuthorCustomer($user['identifier'], $customer->getId(), $type);
-        } else {
+        if (!$customer->getId()) {
             try {
                 $customer = $this->apiObject->createCustomerSocial($user, $this->getStore());
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $this->emailRedirect($e->getMessage(), false);
 
                 return false;
             }
+        } else {
+            $this->apiObject->setAuthorCustomer($user['identifier'], $customer->getId(), $type);
         }
 
         return $customer;
@@ -216,7 +180,6 @@ abstract class AbstractSocial extends Action
 
     /**
      * @param $profile
-     *
      * @return array
      */
     protected function getUserData($profile)
@@ -229,7 +192,6 @@ abstract class AbstractSocial extends Action
      *
      * @param $apiLabel
      * @param bool $needTranslate
-     *
      * @return $this
      */
     public function emailRedirect($apiLabel, $needTranslate = true)
@@ -250,24 +212,21 @@ abstract class AbstractSocial extends Action
     {
         $url = $this->_url->getUrl('customer/account');
 
-        if ($this->_request->getParam('authen') === 'popup') {
+        if ($this->_request->getParam('authen') == 'popup') {
             $url = $this->_url->getUrl('checkout');
         } else {
             $requestedRedirect = $this->accountRedirect->getRedirectCookie();
-            if ($requestedRedirect && !$this->apiHelper->getConfigValue('customer/startup/redirect_dashboard')) {
+            if (!$this->apiHelper->getConfigValue('customer/startup/redirect_dashboard') && $requestedRedirect) {
                 $url = $this->_redirect->success($requestedRedirect);
                 $this->accountRedirect->clearRedirectCookie();
             }
         }
 
         $object = ObjectManager::getInstance()->create(DataObject::class, ['url' => $url]);
-        $this->_eventManager->dispatch(
-            'social_manager_get_login_redirect',
-            [
-                'object'  => $object,
-                'request' => $this->_request
-            ]
-        );
+        $this->_eventManager->dispatch('social_manager_get_login_redirect', [
+            'object'  => $object,
+            'request' => $this->_request
+        ]);
         $url = $object->getUrl();
 
         return $url;
@@ -277,41 +236,20 @@ abstract class AbstractSocial extends Action
      * Return javascript to redirect when login success
      *
      * @param null $content
-     * @param null $customerToken
-     *
-     * @return Raw
+     * @return \Magento\Framework\Controller\Result\Raw
      */
-    public function _appendJs($content = null, $customerToken = null)
+    public function _appendJs($content = null)
     {
-        /** @var Raw $resultRaw */
+        /** @var \Magento\Framework\Controller\Result\Raw $resultRaw */
         $resultRaw = $this->resultRawFactory->create();
 
-        if ($this->_loginPostRedirect()) {
-            $raw = $resultRaw->setContents(
-                $content ?: sprintf(
-                    "<script>window.opener.socialCallback('%s', window);</script>",
-                    $this->_loginPostRedirect()
-                )
-            );
-        } else {
-            $raw = $resultRaw->setContents($content ?:
-                "<script>
-                    window.opener.location.reload(true);
-                    window.close();
-                    if ('{$customerToken}') {
-                        window.MP_ACCESS_TOKEN_KEY = '{$customerToken}';
-                    }
-                </script>");
-        }
-
-        return $raw;
+        return $resultRaw->setContents($content ?: sprintf("<script>window.opener.socialCallback('%s', window);</script>", $this->_loginPostRedirect()));
     }
 
     /**
      * @param $customer
-     *
-     * @throws InputException
-     * @throws FailureToSendException
+     * @throws \Magento\Framework\Exception\InputException
+     * @throws \Magento\Framework\Stdlib\Cookie\FailureToSendException
      */
     public function refresh($customer)
     {
@@ -330,8 +268,8 @@ abstract class AbstractSocial extends Action
     /**
      * Retrieve cookie manager
      *
-     * @return     PhpCookieManager
      * @deprecated
+     * @return \Magento\Framework\Stdlib\Cookie\PhpCookieManager
      */
     private function getCookieManager()
     {
@@ -347,8 +285,8 @@ abstract class AbstractSocial extends Action
     /**
      * Retrieve cookie metadata factory
      *
-     * @return     CookieMetadataFactory
      * @deprecated
+     * @return \Magento\Framework\Stdlib\Cookie\CookieMetadataFactory
      */
     private function getCookieMetadataFactory()
     {
@@ -359,146 +297,5 @@ abstract class AbstractSocial extends Action
         }
 
         return $this->cookieMetadataFactory;
-    }
-
-    /**
-     * @param $type
-     *
-     * @return $this|Raw|void
-     * @throws FailureToSendException
-     * @throws InputException
-     * @throws LocalizedException
-     */
-    public function login($type)
-    {
-        try {
-            if (!$type) {
-                $type = $this->apiObject->getProviderConnected();
-            }
-            $userProfile = $this->apiObject->getUserProfile($type);
-            if (!$userProfile->identifier) {
-                return $this->emailRedirect($type);
-            }
-        } catch (Exception $e) {
-            $this->setBodyResponse($e->getMessage());
-
-            return;
-        }
-
-        $customer      = $this->apiObject->getCustomerBySocial($userProfile->identifier, $type);
-        $customerData  = $this->customerModel->load($customer->getId());
-        if ($customer->getId()) {
-            $customerToken = $this->getCustomerToken($customer->getId());
-        } else {
-            $customerToken = '';
-        }
-
-        if (!$customer->getId()) {
-            $requiredMoreInfo = (int) $this->apiHelper->requiredMoreInfo();
-
-            if ((!$userProfile->email && $requiredMoreInfo === 2) || $requiredMoreInfo === 1) {
-                $this->session->setUserProfile($userProfile);
-
-                return $this->_appendJs(
-                    sprintf(
-                        "<script>
-                                window.close();
-                                window.opener.fakeEmailCallback('%s','%s','%s');
-                                window.MP_ACCESS_TOKEN_KEY = '{$customerToken}';
-                        </script>",
-                        $type,
-                        $userProfile->firstName,
-                        $userProfile->lastName
-                    )
-                );
-            }
-
-            $customer = $this->createCustomerProcess($userProfile, $type);
-        } elseif ($this->apiHelper->isCheckMode() && $customerData->getData('password_hash') === null) {
-            $this->session->setUserProfile($userProfile);
-
-            return $this->_appendJs(
-                sprintf(
-                    "<script>
-                            window.close();
-                            window.opener.fakeEmailCallback('%s','%s','%s');
-                            window.MP_ACCESS_TOKEN_KEY = '{$customerToken}';
-                    </script>",
-                    $type,
-                    $userProfile->firstName,
-                    $userProfile->lastName
-                )
-            );
-
-        }
-        $this->refresh($customer);
-
-        return $this->_appendJs(null, $customerToken);
-    }
-
-    /**
-     * @param $key
-     * @param null $value
-     *
-     * @return bool|mixed
-     */
-    public function checkRequest($key, $value = null)
-    {
-        $param = $this->getRequest()->getParam($key, false);
-
-        if ($value) {
-            return $param === $value;
-        }
-
-        return $param;
-    }
-
-    /**
-     * @return bool
-     */
-    public function checkCustomerLogin()
-    {
-        return true;
-    }
-
-    /**
-     * @param $message
-     */
-    protected function setBodyResponse($message)
-    {
-        $content = '<html><head></head><body>';
-        $content .= '<div class="message message-error">' . __('Ooophs, we got an error: %1', $message) . '</div>';
-        $content .= <<<Style
-<style type="text/css">
-    .message{
-        background: #fffbbb;
-        border: none;
-        border-radius: 0;
-        color: #333333;
-        font-size: 1.4rem;
-        margin: 0 0 10px;
-        padding: 1.8rem 4rem 1.8rem 1.8rem;
-        position: relative;
-        text-shadow: none;
-    }
-    .message-error{
-        background:#ffcccc;
-    }
-</style>
-Style;
-        $content .= '</body></html>';
-        $this->getResponse()->setBody($content);
-    }
-
-    /**
-     * @param $customerId
-     *
-     * @return string
-     */
-    protected function getCustomerToken($customerId)
-    {
-        $tokenModelFactory = $this->tokenFactory->create();
-
-        return $tokenModelFactory->createCustomerToken($customerId)->getToken();
     }
 }

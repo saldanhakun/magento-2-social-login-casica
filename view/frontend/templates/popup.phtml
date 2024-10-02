@@ -15,28 +15,18 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_SocialLogin
- * @copyright   Copyright (c) Mageplaza (https://www.mageplaza.com/)
+ * @copyright   Copyright (c) Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
 ?>
-<?php /** @var \Mageplaza\SocialLogin\Block\Popup $block */
-if ($block->isEnabled() && $block->isEnabled() === 'popup_login'): ?>
+<?php if ($block->isEnabled()): ?>
     <div id="social-login-popup" class="white-popup mfp-with-anim mfp-hide"
-         data-mage-init='{"socialPopupForm": <?= /* @noEscape */ $block->getFormParams() ?>}'>
-        <?= $block->getChildHtml('popup.email') ?>
-        <div class="mp-social-popup" style="padding-top: 15px">
-            <?= $block->getChildHtml('popup.authentication') ?>
-            <?= $block->getChildHtml('popup.create') ?>
-            <?= $block->getChildHtml('popup.forgot') ?>
-        </div>
-        <?= $block->getChildHtml('popup.authentication.social') ?>
-        <?= $block->getChildHtml('popup.additional.info') ?>
-    </div>
-    <div style="clear: both"></div>
-<?php elseif ($block->isCheckMode()): ?>
-    <div id="social-login-popup" class="white-popup mfp-with-anim mfp-hide"
-         data-mage-init='{"socialPopupForm": <?= /* @noEscape */ $block->getFormParams() ?>}'>
-        <?= $block->getChildHtml('popup.email') ?>
+         data-mage-init='{"socialPopupForm": <?php echo $block->getFormParams() ?>}'>
+        <?php echo $block->getChildHtml('popup.email') ?>
+        <?php echo $block->getChildHtml('popup.authentication') ?>
+        <?php echo $block->getChildHtml('popup.create') ?>
+        <?php echo $block->getChildHtml('popup.forgot') ?>
+        <?php echo $block->getChildHtml('popup.additional.info') ?>
     </div>
     <div style="clear: both"></div>
 <?php endif; ?>

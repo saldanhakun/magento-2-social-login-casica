@@ -13,18 +13,16 @@
  * Do not edit or add to this file if you wish to upgrade this extension to newer
  * version in the future.
  *
- * @category  Mageplaza
- * @package   Mageplaza_SocialLogin
- * @copyright Copyright (c) Mageplaza (https://www.mageplaza.com/)
- * @license   https://www.mageplaza.com/LICENSE.txt
+ * @category    Mageplaza
+ * @package     Mageplaza_SocialLogin
+ * @copyright   Copyright (c) Mageplaza (http://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
  */
 
 namespace Mageplaza\SocialLogin\Controller\Popup;
 
-use Exception;
 use Magento\Captcha\Helper\Data as CaptchaData;
 use Magento\Customer\Api\AccountManagementInterface;
-use Magento\Customer\Api\CustomerRepositoryInterface as CustomerRepository;
 use Magento\Customer\Api\Data\AddressInterfaceFactory;
 use Magento\Customer\Api\Data\CustomerInterfaceFactory;
 use Magento\Customer\Api\Data\RegionInterfaceFactory;
@@ -41,8 +39,6 @@ use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Controller\Result\JsonFactory;
-use Magento\Framework\Data\Form\FormKey\Validator;
-use Magento\Framework\DataObject;
 use Magento\Framework\Escaper;
 use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\LocalizedException;
@@ -62,54 +58,52 @@ use Mageplaza\SocialLogin\Helper\Data;
 class Create extends CreatePost
 {
     /**
-     * @type JsonFactory
+     * @type \Magento\Framework\Controller\Result\JsonFactory
      */
     protected $resultJsonFactory;
 
     /**
-     * @type CaptchaData
+     * @type \Magento\Captcha\Helper\Data
      */
     protected $captchaHelper;
 
     /**
-     * @type Data
+     * @type \Mageplaza\SocialLogin\Helper\Data
      */
     protected $socialHelper;
 
     /**
-     * @var PhpCookieManager
+     * @type
      */
     private $cookieMetadataManager;
 
     /**
-     * @var CookieMetadataFactory
+     * @type
      */
     private $cookieMetadataFactory;
 
     /**
-     * Create constructor.
-     *
-     * @param Context $context
-     * @param Session $customerSession
-     * @param ScopeConfigInterface $scopeConfig
-     * @param StoreManagerInterface $storeManager
-     * @param AccountManagementInterface $accountManagement
-     * @param Address $addressHelper
-     * @param UrlFactory $urlFactory
-     * @param FormFactory $formFactory
-     * @param SubscriberFactory $subscriberFactory
-     * @param RegionInterfaceFactory $regionDataFactory
-     * @param AddressInterfaceFactory $addressDataFactory
-     * @param CustomerInterfaceFactory $customerDataFactory
-     * @param CustomerUrl $customerUrl
-     * @param Registration $registration
-     * @param Escaper $escaper
-     * @param CustomerExtractor $customerExtractor
-     * @param DataObjectHelper $dataObjectHelper
-     * @param AccountRedirect $accountRedirect
-     * @param CustomerRepository $customerRepository
-     * @param JsonFactory $jsonFactory
-     * @param Validator|null $formKeyValidator
+     * @param \Magento\Framework\App\Action\Context $context
+     * @param \Magento\Customer\Model\Session $customerSession
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Customer\Api\AccountManagementInterface $accountManagement
+     * @param \Magento\Customer\Helper\Address $addressHelper
+     * @param \Magento\Framework\UrlFactory $urlFactory
+     * @param \Magento\Customer\Model\Metadata\FormFactory $formFactory
+     * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
+     * @param \Magento\Customer\Api\Data\RegionInterfaceFactory $regionDataFactory
+     * @param \Magento\Customer\Api\Data\AddressInterfaceFactory $addressDataFactory
+     * @param \Magento\Customer\Api\Data\CustomerInterfaceFactory $customerDataFactory
+     * @param \Magento\Customer\Model\Url $customerUrl
+     * @param \Magento\Customer\Model\Registration $registration
+     * @param \Magento\Framework\Escaper $escaper
+     * @param \Magento\Customer\Model\CustomerExtractor $customerExtractor
+     * @param \Magento\Framework\Api\DataObjectHelper $dataObjectHelper
+     * @param \Magento\Customer\Model\Account\Redirect $accountRedirect
+     * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
+     * @param \Magento\Captcha\Helper\Data $captchaHelper
+     * @param \Mageplaza\SocialLogin\Helper\Data $socialHelper
      */
     public function __construct(
         Context $context,
@@ -130,10 +124,15 @@ class Create extends CreatePost
         CustomerExtractor $customerExtractor,
         DataObjectHelper $dataObjectHelper,
         AccountRedirect $accountRedirect,
-        CustomerRepository $customerRepository,
-        JsonFactory $jsonFactory,
-        Validator $formKeyValidator = null
-    ) {
+        JsonFactory $resultJsonFactory,
+        CaptchaData $captchaHelper,
+        Data $socialHelper
+    )
+    {
+        $this->resultJsonFactory = $resultJsonFactory;
+        $this->captchaHelper     = $captchaHelper;
+        $this->socialHelper      = $socialHelper;
+
         parent::__construct(
             $context,
             $customerSession,
@@ -152,43 +151,8 @@ class Create extends CreatePost
             $escaper,
             $customerExtractor,
             $dataObjectHelper,
-            $accountRedirect,
-            $customerRepository,
-            $formKeyValidator
+            $accountRedirect
         );
-        $this->resultJsonFactory = $jsonFactory;
-    }
-
-    /**
-     * @return JsonFactory
-     */
-    protected function getJsonFactory()
-    {
-        return $this->resultJsonFactory;
-    }
-
-    /**
-     * @return CaptchaData|mixed
-     */
-    protected function getCaptchaHelper()
-    {
-        if (!$this->captchaHelper) {
-            $this->captchaHelper = ObjectManager::getInstance()->get(CaptchaData::class);
-        }
-
-        return $this->captchaHelper;
-    }
-
-    /**
-     * @return Data|mixed
-     */
-    protected function getSocialHelper()
-    {
-        if (!$this->socialHelper) {
-            $this->socialHelper = ObjectManager::getInstance()->get(Data::class);
-        }
-
-        return $this->socialHelper;
     }
 
     /**
@@ -199,10 +163,12 @@ class Create extends CreatePost
     public function checkCaptcha()
     {
         $formId       = 'user_create';
-        $captchaModel = $this->getCaptchaHelper()->getCaptcha($formId);
-        $resolve      = $this->getSocialHelper()->captchaResolve($this->getRequest(), $formId);
+        $captchaModel = $this->captchaHelper->getCaptcha($formId);
+        if ($captchaModel->isRequired() && !$captchaModel->isCorrect($this->socialHelper->captchaResolve($this->getRequest(), $formId))) {
+            return false;
+        }
 
-        return !($captchaModel->isRequired() && !$captchaModel->isCorrect($resolve));
+        return true;
     }
 
     /**
@@ -212,8 +178,10 @@ class Create extends CreatePost
      */
     public function execute()
     {
-        $resultJson = $this->getJsonFactory()->create();
-        $result     = [
+        /** @var \Magento\Framework\Controller\Result\Json $resultJson */
+        $resultJson = $this->resultJsonFactory->create();
+
+        $result = [
             'success' => false,
             'message' => []
         ];
@@ -247,7 +215,6 @@ class Create extends CreatePost
 
             $password     = $this->getRequest()->getParam('password');
             $confirmation = $this->getRequest()->getParam('password_confirmation');
-
             if (!$this->checkPasswordConfirmation($password, $confirmation)) {
                 $result['message'][] = __('Please make sure your passwords match.');
             } else {
@@ -260,14 +227,10 @@ class Create extends CreatePost
 
                 $this->_eventManager->dispatch(
                     'customer_register_success',
-                    [
-                        'account_controller' => $this,
-                        'customer'           => $customer
-                    ]
+                    ['account_controller' => $this, 'customer' => $customer]
                 );
 
                 $confirmationStatus = $this->accountManagement->getConfirmationStatus($customer->getId());
-
                 if ($confirmationStatus === AccountManagementInterface::ACCOUNT_CONFIRMATION_REQUIRED) {
                     $email = $this->customerUrl->getEmailConfirmationUrl($customer->getEmail());
                     // @codingStandardsIgnoreStart
@@ -283,7 +246,6 @@ class Create extends CreatePost
                     $result['message'][] = __('Create an account successfully. Please wait...');
                     $this->session->setCustomerDataAsLoggedIn($customer);
                 }
-
                 if ($this->getCookieManager()->getCookie('mage-cache-sessid')) {
                     $metadata = $this->getCookieMetadataFactory()->createCookieMetadata();
                     $metadata->setPath('/');
@@ -304,15 +266,10 @@ class Create extends CreatePost
             }
         } catch (LocalizedException $e) {
             $result['message'][] = $this->escaper->escapeHtml($e->getMessage());
-            if ($this->session->getMpRedirectUrl()) {
-                $result['redirect'] = $this->session->getMpRedirectUrl();
-                $this->session->unsMpRedirectUrl();
-            }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $result['message'][] = __('We can\'t save the customer.');
         }
 
-        $result['url'] = $this->_loginPostRedirect();
         $this->session->setCustomerFormData($this->getRequest()->getPostValue());
 
         return $resultJson->setData($result);
@@ -321,8 +278,8 @@ class Create extends CreatePost
     /**
      * Retrieve cookie manager
      *
-     * @return PhpCookieManager
      * @deprecated
+     * @return \Magento\Framework\Stdlib\Cookie\PhpCookieManager
      */
     protected function getCookieManager()
     {
@@ -338,8 +295,8 @@ class Create extends CreatePost
     /**
      * Retrieve cookie metadata factory
      *
-     * @return CookieMetadataFactory
      * @deprecated
+     * @return \Magento\Framework\Stdlib\Cookie\CookieMetadataFactory
      */
     protected function getCookieMetadataFactory()
     {
@@ -357,30 +314,10 @@ class Create extends CreatePost
      *
      * @param string $password
      * @param string $confirmation
-     *
      * @return boolean
      */
     protected function checkPasswordConfirmation($password, $confirmation)
     {
-        return $password === $confirmation;
-    }
-
-    /**
-     * Return redirect url by config
-     *
-     * @return mixed
-     */
-    protected function _loginPostRedirect()
-    {
-        $url = $this->_url->getUrl('customer/account');
-
-        $object = ObjectManager::getInstance()->create(DataObject::class, ['url' => $url]);
-        $this->_eventManager->dispatch('social_manager_get_login_redirect', [
-            'object'  => $object,
-            'request' => $this->_request
-        ]);
-        $url = $object->getUrl();
-
-        return $url;
+        return $password == $confirmation;
     }
 }
