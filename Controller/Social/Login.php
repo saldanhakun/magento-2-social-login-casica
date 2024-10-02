@@ -13,42 +13,35 @@
  * Do not edit or add to this file if you wish to upgrade this extension to newer
  * version in the future.
  *
- * @category  Mageplaza
- * @package   Mageplaza_SocialLogin
- * @copyright Copyright (c) Mageplaza (https://www.mageplaza.com/)
- * @license   https://www.mageplaza.com/LICENSE.txt
+ * @category    Mageplaza
+ * @package     Mageplaza_SocialLogin
+ * @copyright   Copyright (c) Mageplaza (http://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
  */
-namespace Mageplaza\SocialLogin\Controller\Social;
 
-use Exception;
-use Magento\Framework\App\ResponseInterface;
-use Magento\Framework\Controller\Result\Raw;
-use Magento\Framework\Controller\ResultInterface;
-use Magento\Framework\Exception\InputException;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Stdlib\Cookie\FailureToSendException;
+namespace Mageplaza\SocialLogin\Controller\Social;
 
 /**
  * Class Login
- *
  * @package Mageplaza\SocialLogin\Controller\Social
  */
 class Login extends AbstractSocial
 {
     /**
-     * @return ResponseInterface|Raw|ResultInterface|Login|void
-     * @throws FailureToSendException
-     * @throws InputException
-     * @throws LocalizedException
+     * @return $this|\Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\Result\Raw|\Magento\Framework\Controller\ResultInterface|void
+     * @throws \Exception
+     * @throws \Magento\Framework\Exception\InputException
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Stdlib\Cookie\FailureToSendException
      */
     public function execute()
     {
         if ($this->checkCustomerLogin() && $this->session->isLoggedIn()) {
             $this->_redirect('customer/account');
-
             return;
         }
-        $type = $this->apiHelper->setType($this->getRequest()->getParam('type'));
+
+        $type = $this->apiHelper->setType($this->getRequest()->getParam('type', null));
         if (!$type) {
             $this->_forward('noroute');
 
@@ -57,30 +50,21 @@ class Login extends AbstractSocial
 
         try {
             $userProfile = $this->apiObject->getUserProfile($type);
-
             if (!$userProfile->identifier) {
                 return $this->emailRedirect($type);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->setBodyResponse($e->getMessage());
 
             return;
         }
-        $customer = $this->apiObject->getCustomerBySocial($userProfile->identifier, $type);
 
+        $customer = $this->apiObject->getCustomerBySocial($userProfile->identifier, $type);
         if (!$customer->getId()) {
-            $requiredMoreInfo = (int) $this->apiHelper->requiredMoreInfo();
-            if ((!$userProfile->email && $requiredMoreInfo === 2) || $requiredMoreInfo === 1) {
+            if (!$userProfile->email && $this->apiHelper->requireRealEmail()) {
                 $this->session->setUserProfile($userProfile);
 
-                return $this->_appendJs(
-                    sprintf(
-                        "<script>window.close();window.opener.fakeEmailCallback('%s','%s','%s');</script>",
-                        $type,
-                        $userProfile->firstName,
-                        $userProfile->lastName
-                    )
-                );
+                return $this->_appendJs(sprintf("<script>window.close();window.opener.fakeEmailCallback('%s');</script>", $type));
             }
             $customer = $this->createCustomerProcess($userProfile, $type);
         }
@@ -103,7 +87,7 @@ class Login extends AbstractSocial
     protected function setBodyResponse($message)
     {
         $content = '<html><head></head><body>';
-        $content .= '<div class="message message-error">' . __('Ooophs, we got an error: %1', $message) . '</div>';
+        $content .= '<div class="message message-error">' . __("Ooophs, we got an error: %1", $message) . '</div>';
         $content .= <<<Style
 <style type="text/css">
     .message{
@@ -123,6 +107,7 @@ class Login extends AbstractSocial
 </style>
 Style;
         $content .= '</body></html>';
+
         $this->getResponse()->setBody($content);
     }
 }

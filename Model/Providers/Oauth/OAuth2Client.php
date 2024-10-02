@@ -9,11 +9,6 @@ namespace Mageplaza\SocialLogin\Model\Providers\Oauth;
 
 // A service client for the OAuth 2 flow.
 // v0.1.1
-use Exception;
-use Hybrid_Logger;
-use Mageplaza\SocialLogin\Helper\Data as HelperData;
-use StdClass;
-
 class OAuth2Client
 {
     public $api_base_url = "";
@@ -68,32 +63,14 @@ class OAuth2Client
 
     protected $response = null;
 
-    /**
-     * @var HelperData
-     */
-    protected $_helperData;
+    //--
 
-    /**
-     * OAuth2Client constructor.
-     *
-     * @param bool $client_id
-     * @param bool $client_secret
-     * @param string $redirect_uri
-     * @param bool $compressed
-     * @param HelperData $helperData
-     */
-    public function __construct(
-        $client_id = false,
-        $client_secret = false,
-        $redirect_uri = '',
-        $compressed = false,
-        HelperData $helperData
-    ) {
+    public function __construct($client_id = false, $client_secret = false, $redirect_uri = '', $compressed = false)
+    {
         $this->client_id       = $client_id;
         $this->client_secret   = $client_secret;
         $this->redirect_uri    = $redirect_uri;
         $this->curl_compressed = $compressed;
-        $this->_helperData     = $helperData;
     }
 
     public function authorizeUrl($extras = [])
@@ -128,7 +105,7 @@ class OAuth2Client
         $response = $this->parseRequestResult($response);
 
         if (!$response || !isset($response->access_token)) {
-            throw new Exception("The Authorization Service has return: " . $response->error);
+            throw new \Exception("The Authorization Service has return: " . $response->error);
         }
 
         if (isset($response->access_token)) {
@@ -162,7 +139,7 @@ class OAuth2Client
 
                     // if wrong response
                     if (!isset($response->access_token) || !$response->access_token) {
-                        throw new Exception("The Authorization Service has return an invalid response while requesting a new access token. given up!");
+                        throw new \Exception("The Authorization Service has return an invalid response while requesting a new access token. given up!");
                     }
 
                     // set new access_token
@@ -189,16 +166,16 @@ class OAuth2Client
         $response                           = null;
 
         switch ($method) {
-            case 'GET':
+            case 'GET'  :
                 $response = $this->request($url, $parameters, "GET");
                 break;
-            case 'POST':
+            case 'POST' :
                 $response = $this->request($url, $parameters, "POST");
                 break;
-            case 'DELETE':
+            case 'DELETE' :
                 $response = $this->request($url, $parameters, "DELETE");
                 break;
-            case 'PATCH':
+            case 'PATCH'  :
                 $response = $this->request($url, $parameters, "PATCH");
                 break;
         }
@@ -267,8 +244,8 @@ class OAuth2Client
 
     private function request($url, $params = false, $type = "GET")
     {
-        Hybrid_Logger::info("Enter OAuth2Client::request( $url )");
-        Hybrid_Logger::debug("OAuth2Client::request(). dump request params: ", $this->_helperData->serialize($params));
+        \Hybrid_Logger::info("Enter OAuth2Client::request( $url )");
+        \Hybrid_Logger::debug("OAuth2Client::request(). dump request params: ", serialize($params));
 
         $urlEncodedParams = http_build_query($params, '', '&');
 
@@ -318,16 +295,10 @@ class OAuth2Client
         }
         $response = curl_exec($ch);
         if ($response === false) {
-            Hybrid_Logger::error("OAuth2Client::request(). curl_exec error: ", curl_error($ch));
+            \Hybrid_Logger::error("OAuth2Client::request(). curl_exec error: ", curl_error($ch));
         }
-        Hybrid_Logger::debug(
-            "OAuth2Client::request(). dump request info: ",
-            $this->_helperData->serialize(curl_getinfo($ch))
-        );
-        Hybrid_Logger::debug(
-            "OAuth2Client::request(). dump request result: ",
-            $this->_helperData->serialize($response)
-        );
+        \Hybrid_Logger::debug("OAuth2Client::request(). dump request info: ", serialize(curl_getinfo($ch)));
+        \Hybrid_Logger::debug("OAuth2Client::request(). dump request result: ", serialize($response));
 
         $this->http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $this->http_info = array_merge($this->http_info, curl_getinfo($ch));
@@ -345,7 +316,7 @@ class OAuth2Client
 
         parse_str($result, $output);
 
-        $result = new StdClass();
+        $result = new \StdClass();
 
         foreach ($output as $k => $v) {
             $result->$k = $v;

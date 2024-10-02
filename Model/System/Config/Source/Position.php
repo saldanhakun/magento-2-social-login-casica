@@ -13,10 +13,10 @@
  * Do not edit or add to this file if you wish to upgrade this extension to newer
  * version in the future.
  *
- * @category  Mageplaza
- * @package   Mageplaza_SocialLogin
- * @copyright Copyright (c) Mageplaza (https://www.mageplaza.com/)
- * @license   https://www.mageplaza.com/LICENSE.txt
+ * @category    Mageplaza
+ * @package     Mageplaza_SocialLogin
+ * @copyright   Copyright (c) Mageplaza (http://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
  */
 
 namespace Mageplaza\SocialLogin\Model\System\Config\Source;
@@ -46,7 +46,7 @@ class Position implements ArrayInterface
             ['value' => '', 'label' => __('-- Please Select --')],
             ['value' => self::PAGE_LOGIN, 'label' => __('Customer Login Page')],
             ['value' => self::PAGE_CREATE, 'label' => __('Customer Create Page')],
-            ['value' => self::PAGE_POPUP, 'label' => __('Social Login Popup')],
+            ['value' => self::PAGE_POPUP, 'label' => __('Social Popup Login')],
             ['value' => self::PAGE_AUTHEN, 'label' => __('Customer Authentication Popup')]
         ];
     }

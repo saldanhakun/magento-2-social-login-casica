@@ -14,7 +14,7 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_SocialLogin
- * @copyright   Copyright (c) Mageplaza (https://www.mageplaza.com/)
+ * @copyright   Copyright (c) Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
 @import url('https://fonts.googleapis.com/css?family=Roboto');
@@ -28,25 +28,21 @@
     margin: 0 auto;
 }
 
-#social-login-popup,
-#request-popup {
+#social-login-popup {
     overflow: hidden
 }
 
-#social-login-popup .block-container,
-#request-popup .block-container {
+#social-login-popup .block-container {
     width: 100%;
     display: inline-block;
 }
 
-#social-login-popup .social-login-title,
-#request-popup .social-login-title {
+#social-login-popup .social-login-title {
     padding: 10px 10px;
     background-color: #3399cc;
 }
 
-#social-login-popup .block-container .block,
-#request-popup .block-container .block {
+#social-login-popup .block-container .block {
     padding: 20px 25px;
     margin: 0;
 }
@@ -59,16 +55,14 @@
     background: #fbfaf6 url('images/ajax-loader.gif') no-repeat center center;
 }
 
-#social-login-popup .block-container .block .block-title,
-#request-popup .block-container .block .block-title {
+#social-login-popup .block-container .block .block-title {
     padding-bottom: 10px;
     margin-bottom: 10px;
     border-bottom: 1px solid #ccc;
 }
 
-#social-login-popup .fieldset,
-#request-popup .fieldset {
-    margin: 0px;
+#social-login-popup .fieldset {
+    margin: 0 0 20px;
 }
 
 .actions-toolbar {
@@ -79,8 +73,7 @@
     width: 215px;
 }
 
-#social-login-popup .actions-toolbar > .secondary .action.back,
-#request-popup .actions-toolbar > .secondary .action.back {
+#social-login-popup .actions-toolbar > .secondary .action.back {
     display: block;
 }
 
@@ -129,7 +122,7 @@
 }
 
 .social-login-authentication-popup .block-content .actions-toolbar .btn-social {
-    /*height: 20px;*/
+    height: 20px;
     padding-left: 19px;
 }
 
@@ -147,15 +140,6 @@
     margin-left: 25px;
     color: #ffffff;
 }
-
-.block-authentication .actions-toolbar {
-    margin-bottom: unset !important;
-}
-
-.btn-authentication-pop {
-    width: 175px;
-}
-
 
 .social-login-authentication-channel .actions-toolbar.social-btn > .primary .action {
     width: 100%;
@@ -801,116 +785,6 @@
 
 .btn-foursquare .badge {
     color: #f94877;
-    background-color: #fff
-}
-
-.btn-disqus {
-    color: #fff;
-    background-color: #2E9FFF;
-    border-color: rgba(0, 0, 0, 0.2)
-}
-
-.btn-disqus .fa-disqus {
-    background: url("images/disqus-logo.png") no-repeat;
-}
-
-.btn-disqus .fa-disqus {
-    content: ""
-}
-
-.btn-mailru {
-    color: #fff;
-    background-color: #005FF9;
-    border-color: rgba(0, 0, 0, 0.2)
-}
-
-.btn-mailru:focus, .btn-mailru.focus {
-    color: #fff;
-    background-color: #0370c4;
-    border-color: rgba(0, 0, 0, 0.2)
-}
-
-.btn-mailru:hover {
-    color: #fff;
-    background-color: #004ecc;
-    border-color: rgba(0, 0, 0, 0.2)
-}
-
-.btn-mailru:active, .btn-mailru.active, .open > .dropdown-toggle.btn-live {
-    color: #fff;
-    background-color: #0370c4;
-    border-color: rgba(0, 0, 0, 0.2)
-}
-
-.btn-mailru:active:hover, .btn-mailru.active:hover, .open > .dropdown-toggle.btn-mailru:hover, .btn-mailru:active:focus, .btn-mailru.active:focus, .open > .dropdown-toggle.btn-mailru:focus, .btn-mailru:active.focus, .btn-mailru.active.focus, .open > .dropdown-toggle.btn-mailru.focus {
-    color: #fff;
-    background-color: #0370c4;
-    border-color: rgba(0, 0, 0, 0.2)
-}
-
-.btn-mailru:active, .btn-mailru.active, .open > .dropdown-toggle.btn-mailru {
-    background-image: none
-}
-
-.btn-mailru.disabled:hover, .btn-mailru[disabled]:hover, fieldset[disabled] .btn-mailru:hover, .btn-mailru.disabled:focus, .btn-mailru[disabled]:focus, fieldset[disabled] .btn-mailru:focus, .btn-mailru.disabled.focus, .btn-mailru[disabled].focus, fieldset[disabled] .btn-mailru.focus {
-    background-color: #0370c4;
-    border-color: rgba(0, 0, 0, 0.2)
-}
-
-.btn-mailru .badge {
-    color: #0370c4;
-    background-color: #fff
-}
-
-.btn-mailru .fa-mailru {
-    background: url("images/mailru-logo.png") no-repeat;
-}
-
-.btn-mailru .fa-mailru {
-    content: ""
-}
-
-.btn-steam {
-    color: #fff;
-    background-color: #444;
-    border-color: rgba(0, 0, 0, 0.2)
-}
-
-.btn-steam:focus, .btn-steam.focus {
-    color: #fff;
-    background-color: #2b2b2b;
-    border-color: rgba(0, 0, 0, 0.2)
-}
-
-.btn-steam:hover {
-    color: #fff;
-    background-color: #2b2b2b;
-    border-color: rgba(0, 0, 0, 0.2)
-}
-
-.btn-steam:active, .btn-steam.active, .open > .dropdown-toggle.btn-steam {
-    color: #fff;
-    background-color: #2b2b2b;
-    border-color: rgba(0, 0, 0, 0.2)
-}
-
-.btn-steam:active:hover, .btn-steam.active:hover, .open > .dropdown-toggle.btn-steam:hover, .btn-steam:active:focus, .btn-steam.active:focus, .open > .dropdown-toggle.btn-steam:focus, .btn-steam:active.focus, .btn-steam.active.focus, .open > .dropdown-toggle.btn-steam.focus {
-    color: #fff;
-    background-color: #191919;
-    border-color: rgba(0, 0, 0, 0.2)
-}
-
-.btn-steam:active, .btn-steam.active, .open > .dropdown-toggle.btn-steam {
-    background-image: none
-}
-
-.btn-steam.disabled:hover, .btn-steam[disabled]:hover, fieldset[disabled] .btn-steam:hover, .btn-steam.disabled:focus, .btn-steam[disabled]:focus, fieldset[disabled] .btn-steam:focus, .btn-steam.disabled.focus, .btn-steam[disabled].focus, fieldset[disabled] .btn-steam.focus {
-    background-color: #444;
-    border-color: rgba(0, 0, 0, 0.2)
-}
-
-.btn-steam .badge {
-    color: #444;
     background-color: #fff
 }
 
@@ -1628,103 +1502,4 @@
 
 .mfp-wrap {
     overflow: scroll;
-}
-
-.btn-live {
-    color: #fff;
-    background-color: #0370c4;
-    border-color: rgba(0, 0, 0, 0.2)
-}
-
-.btn-live:focus, .btn-live.focus {
-    color: #fff;
-    background-color: #0370c4;
-    border-color: rgba(0, 0, 0, 0.2)
-}
-
-.btn-live:hover {
-    color: #fff;
-    background-color: #30548e;
-    border-color: rgba(0, 0, 0, 0.2)
-}
-
-.btn-live:active, .btn-live.active, .open > .dropdown-toggle.btn-live {
-    color: #fff;
-    background-color: #0370c4;
-    border-color: rgba(0, 0, 0, 0.2)
-}
-
-.btn-live:active:hover, .btn-live.active:hover, .open > .dropdown-toggle.btn-live:hover, .btn-live:active:focus, .btn-live.active:focus, .open > .dropdown-toggle.btn-live:focus, .btn-live:active.focus, .btn-live.active.focus, .open > .dropdown-toggle.btn-live.focus {
-    color: #fff;
-    background-color: #0370c4;
-    border-color: rgba(0, 0, 0, 0.2)
-}
-
-.btn-live:active, .btn-live.active, .open > .dropdown-toggle.btn-live {
-    background-image: none
-}
-
-.btn-live.disabled:hover, .btn-live[disabled]:hover, fieldset[disabled] .btn-live:hover, .btn-live.disabled:focus, .btn-live[disabled]:focus, fieldset[disabled] .btn-live:focus, .btn-live.disabled.focus, .btn-live[disabled].focus, fieldset[disabled] .btn-live.focus {
-    background-color: #0370c4;
-    border-color: rgba(0, 0, 0, 0.2)
-}
-
-.btn-live .badge {
-    color: #0370c4;
-    background-color: #fff
-}
-
-.btn-live .fa-live {
-    background: url("images/live-logo.png") no-repeat center;
-}
-
-.btn-live .fa-live:before {
-    content: ""
-}
-
-#bnt-social-login-authentication {
-    margin: 12px 0px;
-}
-
-.actions-toolbar > .secondary:last-child {
-    float: left;
-    margin-top: 10px;
-    margin-left: 10px;
-}
-
-.form-customer-login .g-recaptcha {
-    margin: unset !important;
-}
-
-@media only screen and (min-width: 768px) {
-    .popup-authentication .actions-toolbar {
-        margin-bottom: 0;
-        margin-top: unset !important;
-    }
-}
-
-@media only screen and (max-width: 767px) {
-    .modal-popup.request-popup.modal-slide {
-        left: 0;
-        z-index: 900;
-    }
-}
-
-@media only screen and (max-width: 766px) {
-    .secondary {
-        width: 93%;
-        padding-top: 0;
-        margin-top: 0;
-    }
-    #bnt-social-login-authentication {
-        margin-bottom: 0;
-    }
-    .forgot-pass-title {
-        width: 80%;
-        font-size: 1.45em;
-    }
-}
-
-.customer-account-create .account-social-login, .customer-account-login .account-social-login {
-    display: block !important
 }

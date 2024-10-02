@@ -1,18 +1,11 @@
 {
-  "name": "mageplaza/magento-2-social-login",
+  "name": "saldanhakun/magento-2-social-login-casica",
   "description": "Magento 2 Social Login extension is designed for quick login to your Magento 2 store without procesing complex register steps",
   "require": {
-    "mageplaza/module-core": "^1.4.5",
-    "mageplaza/module-smtp": "^1.2.6",
-    "mageplaza/module-google-recaptcha": "^1.0.2",
-    "mageplaza/module-two-factor-authentication": "^1.1.1",
-    "hybridauth/hybridauth": "^2.14.0"
-  },
-  "require-dev": {
-    "roave/security-advisories": "dev-master"
+    "mageplaza/module-core": "^1.3.13",
+    "saldanhakun/hybridauth-casoca": "dev-master"
   },
   "type": "magento2-module",
-  "version": "2.8.3",
   "license": "proprietary",
   "authors": [
     {
@@ -39,8 +32,13 @@
     "mageplaza",
     "google",
     "facebook",
-    "twitter",
-    "social proof"
+    "twitter"
+  ],
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/saldanhakun/hybridauth-casoca.git"
+    }
   ],
   "autoload": {
     "files": [
