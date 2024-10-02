@@ -3,7 +3,7 @@
   "description": "Magento 2 Social Login extension is designed for quick login to your Magento 2 store without procesing complex register steps",
   "require": {
     "mageplaza/module-core": "^1.3.13",
-    "saldanhakun/hybridauth-casoca": "=2.12.0-casoca"
+    "saldanhakun/hybridauth-casoca": "dev-main"
   },
   "type": "magento2-module",
   "version": "2.7.0-casoca",
