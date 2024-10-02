@@ -6,7 +6,6 @@
     "saldanhakun/hybridauth-casoca": "dev-main"
   },
   "type": "magento2-module",
-  "version": "2.7.0-casoca",
   "license": "proprietary",
   "authors": [
     {
