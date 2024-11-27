@@ -110,18 +110,14 @@ class Social extends Template
      * @param null $position
      * @return bool
      */
-    public function canShow($position = null)
+    public function canShow()
     {
-        $displayConfig = $this->socialHelper->getConfigGeneral('social_display');
-        $displayConfig = explode(',', $displayConfig);
 
-        if (!$position) {
-            $position = ($this->getRequest()->getFullActionName() == 'customer_account_login') ?
-                Position::PAGE_LOGIN :
-                Position::PAGE_CREATE;
+        if ($this->getRequest()->getFullActionName() == 'customer_account_create' || $this->getRequest()->getFullActionName() == 'customer_account_login'){
+            return false;
         }
+        else return true;
 
-        return in_array($position, $displayConfig);
     }
 
     /**

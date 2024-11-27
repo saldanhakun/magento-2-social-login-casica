@@ -36,7 +36,7 @@ class Login extends AbstractSocial
      */
     public function execute()
     {
-        if ($this->checkCustomerLogin() && $this->session->isLoggedIn()) {
+        if($this->session->isLoggedIn()){
             $this->_redirect('customer/account');
             return;
         }
@@ -71,14 +71,6 @@ class Login extends AbstractSocial
         $this->refresh($customer);
 
         return $this->_appendJs();
-    }
-
-    /**
-     * @return bool
-     */
-    public function checkCustomerLogin()
-    {
-        return true;
     }
 
     /**

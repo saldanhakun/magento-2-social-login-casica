@@ -211,6 +211,7 @@ abstract class AbstractSocial extends Action
     protected function _loginPostRedirect()
     {
         $url = $this->_url->getUrl('customer/account');
+        $cart =  \Magento\Framework\App\ObjectManager::getInstance()->get('\Magento\Checkout\Model\Session')->getQuote();
 
         if ($this->_request->getParam('authen') == 'popup') {
             $url = $this->_url->getUrl('checkout');
@@ -227,7 +228,8 @@ abstract class AbstractSocial extends Action
             'object'  => $object,
             'request' => $this->_request
         ]);
-        $url = $object->getUrl();
+        if(count($cart->getAllItems()) > 0) $url = $this->_url->getUrl('checkout');
+        else $url = $object->getUrl();
 
         return $url;
     }
